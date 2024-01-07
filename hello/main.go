@@ -25,7 +25,6 @@ var phrasebook = map[language]string{
     "he": "שלום עולם",         // Hebrew
     "ur": "ہیلو دنیا",         // Urdu
     "vi": "Xin chào Thế Giới", // Vietnamese
-    "de": "Hallo Welt",        // German
 }
 
 // greet says hello to the world
