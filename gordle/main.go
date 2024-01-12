@@ -1,15 +1,25 @@
 package main
 
 import (
-	"learngo-pockets/gordle/gordle"
 	"os"
+
+	"learngo-pockets/gordle/gordle"
 )
 
 const maxAttempts = 6
 
 func main() {
-	solution := "hello"
+	corpus, err := gordle.ReadCorpus("corpus/english.txt")
+	if err != nil {
+		panic(err)
+	}
 
-	g := gordle.New(os.Stdin, solution, maxAttempts)
+	// Create the game.
+	g, err := gordle.New(os.Stdin, corpus, maxAttempts)
+	if err != nil {
+		panic(err)
+	}
+
+	// Run the game ! It will end when it's over.
 	g.Play()
 }
