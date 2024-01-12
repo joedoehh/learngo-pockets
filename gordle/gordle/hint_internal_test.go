@@ -1,62 +1,34 @@
 package gordle
 
-import "strings"
+import "testing"
 
-// hint describes the validity of a character in a word.
-type hint int
-
-const (
-	absentCharacter hint = iota
-	wrongPosition
-	correctPosition
-)
-
-// String implements the Stringer interface.
-func (h hint) String() string {
-	switch h {
-	case absentCharacter:
-		return "⬜️"
-	case wrongPosition:
-		return "🟡"
-	case correctPosition:
-		return "💚"
-	default:
-		// This should never happen.
-		return "💔"
+func Test_feedback_String(t *testing.T) {
+	testCases := map[string]struct {
+		fb   feedback
+		want string
+	}{
+		"three correct": {
+			fb:   feedback{correctPosition, correctPosition, correctPosition},
+			want: "💚💚💚",
+		},
+		"one of each": {
+			fb:   feedback{correctPosition, wrongPosition, absentCharacter},
+			want: "💚🟡⬜️",
+		},
+		"different order for one of each": {
+			fb:   feedback{wrongPosition, absentCharacter, correctPosition},
+			want: "🟡⬜️💚",
+		},
+		"unknown position": {
+			fb:   feedback{404},
+			want: "💔",
+		},
 	}
-}
-
-// feedback is a list of hints, one per character of the word.
-type feedback []hint
-
-// String implements the Stringer interface for a slice of hints.
-func (fb feedback) String() string {
-	sb := strings.Builder{}
-	for _, h := range fb {
-		sb.WriteString(h.String())
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			if got := testCase.fb.String(); got != testCase.want {
+				t.Errorf("String() = %v, want %v", got, testCase.want)
+			}
+		})
 	}
-	return sb.String()
-}
-
-// StringConcat is a naive implementation to build feedback as a string.
-// It is used only to benchmark it against the strings.Builder version.
-func (fb feedback) StringConcat() string {
-	var output string
-	for _, h := range fb {
-		output += h.String()
-	}
-	return output
-}
-
-// Equal determines equality of two feedbacks.
-func (fb feedback) Equal(other feedback) bool {
-	if len(fb) != len(other) {
-		return false
-	}
-	for index, value := range fb {
-		if value != other[index] {
-			return false
-		}
-	}
-	return true
 }
